@@ -1,10 +1,9 @@
 import {
   playPhaseCue,
   announceTransition,
-  announceRest,
   announceSessionComplete,
-  announceSessionStopped,
   playCompletionChime,
+  speakAsync,
 } from '../audio.js';
 import { getTechnique } from '../techniques/registry.js';
 
@@ -36,8 +35,7 @@ export class SessionSequencer {
         if (!technique) continue;
 
         if (i === 0) {
-          await announceTransition(technique.name, 'starting');
-          await delay(800);
+          speakAsync(`Starting ${technique.name}`);
         }
 
         this.controller.onTechniqueStart(technique, item);
@@ -92,7 +90,7 @@ export class SessionSequencer {
 
       if (event.type === 'rest') {
         this.controller.onRest(event);
-        await announceRest();
+        speakAsync('Rest');
         continue;
       }
 
@@ -108,7 +106,7 @@ export class SessionSequencer {
     if (seconds <= 0) return;
     const durationMs = seconds * 1000;
     this.controller.onRest({ durationMs, label: 'Rest' });
-    await announceRest();
+    speakAsync('Rest');
     await waitUntil(durationMs, signal);
   }
 
@@ -123,6 +121,7 @@ export class SessionSequencer {
   stop() {
     this.abortController?.abort();
     this.running = false;
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
   }
 
   isRunning() {
@@ -146,10 +145,6 @@ function waitUntil(ms, signal) {
       reject(new DOMException('Aborted', 'AbortError'));
     }, { once: true });
   });
-}
-
-export async function finishSessionStopped(summary, totalBreaths) {
-  await announceSessionStopped();
 }
 
 export async function finishSessionComplete(summary, totalBreaths) {

@@ -118,23 +118,45 @@ function voiceGender(cueId) {
 export function speak(text, opts = {}) {
   if (!window.speechSynthesis) return Promise.resolve();
   return new Promise((resolve) => {
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.volume = volume;
-    u.rate = opts.rate ?? 0.85;
-    u.pitch = opts.gender === 'female' ? 1.3 : opts.gender === 'male' ? 0.7 : 1;
-    if (opts.gender) {
-      const voices = window.speechSynthesis.getVoices();
-      const keys = opts.gender === 'male'
-        ? ['male', 'david', 'daniel', 'alex', 'james', 'mark']
-        : ['female', 'samantha', 'karen', 'victoria', 'zoe', 'kate'];
-      const match = voices.find(v => keys.some(k => v.name.toLowerCase().includes(k)));
-      if (match) u.voice = match;
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      resolve();
+    };
+    const maxMs = opts.timeout ?? 5000;
+    const timer = setTimeout(finish, maxMs);
+
+    try {
+      window.speechSynthesis.cancel();
+      if (typeof window.speechSynthesis.resume === 'function') {
+        window.speechSynthesis.resume();
+      }
+      const u = new SpeechSynthesisUtterance(text);
+      u.volume = volume;
+      u.rate = opts.rate ?? 0.85;
+      u.pitch = opts.gender === 'female' ? 1.3 : opts.gender === 'male' ? 0.7 : 1;
+      if (opts.gender) {
+        const voices = window.speechSynthesis.getVoices();
+        const keys = opts.gender === 'male'
+          ? ['male', 'david', 'daniel', 'alex', 'james', 'mark']
+          : ['female', 'samantha', 'karen', 'victoria', 'zoe', 'kate'];
+        const match = voices.find(v => keys.some(k => v.name.toLowerCase().includes(k)));
+        if (match) u.voice = match;
+      }
+      u.onend = () => { clearTimeout(timer); finish(); };
+      u.onerror = () => { clearTimeout(timer); finish(); };
+      window.speechSynthesis.speak(u);
+    } catch {
+      clearTimeout(timer);
+      finish();
     }
-    u.onend = () => resolve();
-    u.onerror = () => resolve();
-    window.speechSynthesis.speak(u);
   });
+}
+
+/** Speak without blocking session flow (mobile-safe). */
+export function speakAsync(text, opts = {}) {
+  void speak(text, opts);
 }
 
 export function playPhaseCue(cueId, phase, techniqueKind = 'two-phase') {
@@ -159,7 +181,7 @@ export function playPhaseCue(cueId, phase, techniqueKind = 'two-phase') {
 
 export function announceTransition(techniqueName, type) {
   const text = type === 'next' ? `Next: ${techniqueName}` : `Starting ${techniqueName}`;
-  return speak(text);
+  return speak(text, { timeout: 6000 });
 }
 
 export function announceRest() {

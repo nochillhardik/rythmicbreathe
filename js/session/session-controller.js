@@ -1,5 +1,5 @@
-import { SessionSequencer, finishSessionComplete, finishSessionStopped } from './sequencer.js';
-import { unlockAudio, resetLongPressTicks, playLongPressTick } from '../audio.js';
+import { SessionSequencer, finishSessionComplete } from './sequencer.js';
+import { unlockAudio, resetLongPressTicks, playLongPressTick, speakAsync } from '../audio.js';
 
 const HOLD_MS = 1000;
 const CIRCUMFERENCE = 2 * Math.PI * 54;
@@ -14,6 +14,7 @@ export class SessionController {
     this.elapsedIV = null;
     this.elapsedStart = null;
     this.sequence = [];
+    this.sessionStarting = false;
     this.bindLongPress();
   }
 
@@ -40,7 +41,7 @@ export class SessionController {
     this.showSessionUi();
     this.sessionActive = true;
     this.el.techniqueHeader.textContent = technique.name;
-    if (!this.elapsedIV) this.startElapsed();
+    this.startElapsed();
   }
 
   onPhase(event, technique, item) {
@@ -133,9 +134,9 @@ export class SessionController {
     this.sessionActive = false;
     this.stopElapsed();
     if (window.speechSynthesis) window.speechSynthesis.cancel();
-    await finishSessionStopped();
     this.el.completeSub.textContent = 'Session stopped early';
     this.el.completeOverlay.style.display = 'flex';
+    speakAsync('Session stopped');
   }
 
   async startSession() {
@@ -181,23 +182,28 @@ export class SessionController {
   }
 
   stopElapsed() {
-    clearInterval(this.elapsedIV);
+    if (this.elapsedIV) clearInterval(this.elapsedIV);
+    this.elapsedIV = null;
   }
 
   bindLongPress() {
     const page = this.el.sessionPage;
+    let holdCompleted = false;
+
     const start = (e) => {
       if (e.target.closest('button, input, select')) return;
       e.preventDefault();
+      holdCompleted = false;
       unlockAudio();
       this.pressStart = Date.now();
       resetLongPressTicks();
       this.el.pressRing.classList.add('visible');
       this.el.ringFill.style.transition = 'none';
       this.el.ringFill.style.strokeDashoffset = CIRCUMFERENCE;
-      requestAnimationFrame(() => this.animateRing());
+      requestAnimationFrame(() => this.animateRing(() => { holdCompleted = true; }));
     };
     const cancel = () => {
+      if (holdCompleted) return;
       this.pressStart = null;
       resetLongPressTicks();
       if (this.pressRAF) cancelAnimationFrame(this.pressRAF);
@@ -206,6 +212,7 @@ export class SessionController {
     };
 
     page.addEventListener('touchstart', start, { passive: false });
+    page.addEventListener('touchmove', (e) => { if (this.pressStart) e.preventDefault(); }, { passive: false });
     page.addEventListener('touchend', cancel, { passive: false });
     page.addEventListener('touchcancel', cancel, { passive: false });
     page.addEventListener('mousedown', start);
@@ -213,7 +220,7 @@ export class SessionController {
     page.addEventListener('mouseleave', cancel);
   }
 
-  animateRing() {
+  animateRing(onComplete) {
     if (!this.pressStart) return;
     const elapsed = Date.now() - this.pressStart;
     const progress = Math.min(elapsed / HOLD_MS, 1);
@@ -225,11 +232,13 @@ export class SessionController {
       resetLongPressTicks();
       this.el.pressRing.classList.remove('visible');
       this.el.ringFill.style.strokeDashoffset = CIRCUMFERENCE;
+      onComplete?.();
 
       if (this.sequencer.isRunning() || this.sessionActive) {
         this.stopEarly();
-      } else {
-        this.startSession();
+      } else if (!this.sessionStarting) {
+        this.sessionStarting = true;
+        this.startSession().finally(() => { this.sessionStarting = false; });
       }
       return;
     }
