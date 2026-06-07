@@ -1,0 +1,300 @@
+.page {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  background: var(--sand);
+  background-image:
+    radial-gradient(ellipse at 20% 20%, rgba(123,163,192,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 80%, rgba(122,158,126,0.08) 0%, transparent 60%);
+}
+
+.page.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+}
+
+#page-setup {
+  padding: 2rem 1.5rem 4rem;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 480px;
+}
+
+h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: 2.2rem;
+  letter-spacing: 0.08em;
+  color: var(--bark-dark);
+  text-align: center;
+  margin-bottom: 0.2rem;
+}
+
+.subtitle {
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 1.8rem;
+}
+
+.card {
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(139,111,71,0.15);
+  border-radius: 20px;
+  padding: 1.8rem;
+  width: 100%;
+  margin-bottom: 1.2rem;
+}
+
+.card-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.card-hint {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.technique-pool {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.technique-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.85rem 1rem;
+  background: rgba(255,255,255,0.75);
+  border: 1px solid rgba(139,111,71,0.2);
+  border-radius: 12px;
+  cursor: grab;
+  transition: border-color 0.2s, transform 0.15s;
+}
+
+.technique-chip:active { cursor: grabbing; transform: scale(0.98); }
+.technique-chip.unavailable {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.chip-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  color: var(--bark-dark);
+}
+
+.chip-desc {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.sequence-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 80px;
+}
+
+.sequence-empty {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 1.5rem 0.5rem;
+  border: 1px dashed rgba(139,111,71,0.25);
+  border-radius: 12px;
+}
+
+.sequence-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  gap: 0.5rem 0.6rem;
+  padding: 0.85rem;
+  background: rgba(255,255,255,0.8);
+  border: 1px solid rgba(139,111,71,0.18);
+  border-radius: 14px;
+  align-items: start;
+  position: relative;
+}
+
+.sequence-row.drag-over {
+  border-color: var(--bark);
+}
+
+.drag-handle {
+  grid-row: 1 / 2;
+  cursor: grab;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  padding-top: 0.2rem;
+}
+
+.row-controls {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  align-items: flex-end;
+}
+
+.row-info { min-width: 0; }
+
+.row-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem;
+  color: var(--bark-dark);
+}
+
+.row-desc {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+}
+
+.row-sets, .row-sound, .row-rest {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1 1 70px;
+  min-width: 70px;
+}
+
+.row-sets label, .row-sound label, .row-rest label {
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.row-sets input, .sound-select, .row-rest input {
+  width: 100%;
+  min-width: 56px;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid rgba(139,111,71,0.22);
+  border-radius: 8px;
+  padding: 0.45rem 0.5rem;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text);
+  outline: none;
+}
+
+.sound-select {
+  max-width: 140px;
+  padding-right: 1.5rem;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238b6f47' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+}
+
+.row-test {
+  margin: 0;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.62rem;
+  flex: 0 0 auto;
+  align-self: flex-end;
+}
+
+.reorder-btns {
+  display: flex;
+  gap: 0.25rem;
+  grid-column: 1 / -1;
+}
+
+.reorder-btn, .remove-btn {
+  background: transparent;
+  border: 1px solid rgba(139,111,71,0.2);
+  border-radius: 8px;
+  padding: 0.25rem 0.55rem;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.remove-btn {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0.1rem 0.5rem;
+}
+
+.volume-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.volume-row label {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+input[type="range"] {
+  flex: 1;
+  accent-color: var(--bark);
+  cursor: pointer;
+  height: 4px;
+}
+
+.vol-val {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  min-width: 2.8rem;
+  text-align: right;
+}
+
+.test-btn {
+  background: transparent;
+  border: 1px solid rgba(139,111,71,0.25);
+  border-radius: 30px;
+  padding: 0.5rem 1.5rem;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.btn-begin {
+  width: 100%;
+  padding: 1.1rem;
+  background: var(--bark-dark);
+  color: var(--sand);
+  border: none;
+  border-radius: 16px;
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  font-size: 0.82rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.btn-begin:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-begin:active:not(:disabled) { background: var(--bark); }

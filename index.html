@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Rythmic Breathe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/session.css">
+</head>
+<body>
+
+<!-- SETUP -->
+<div class="page" id="page-setup">
+  <h1>Rythmic Breathe</h1>
+  <p class="subtitle">Meditation · Breathing Guide</p>
+
+  <div class="card">
+    <div class="card-label">Available Techniques</div>
+    <p class="card-hint">Tap or drag a technique into your sequence below.</p>
+    <div class="technique-pool" id="technique-pool"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Your Sequence</div>
+    <div class="sequence-list" id="sequence-list"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Global</div>
+    <div class="volume-row">
+      <label for="vol-slider">Volume</label>
+      <input type="range" id="vol-slider" min="0" max="100" value="70">
+      <span class="vol-val" id="vol-val">70%</span>
+    </div>
+  </div>
+
+  <button class="btn-begin" id="begin-btn" disabled>Begin Session</button>
+</div>
+
+<!-- SESSION -->
+<div class="page hidden" id="page-session">
+
+  <div class="ready-state" id="ready-state">
+    <div class="ready-orb"></div>
+    <div class="ready-title">Ready</div>
+    <div class="ready-sub">Hold anywhere to begin · eyes closed</div>
+  </div>
+
+  <div class="transition-state" id="transition-state">
+    <div class="ready-orb"></div>
+    <div class="transition-title" id="transition-title">Rest</div>
+    <div class="transition-sub" id="transition-sub"></div>
+  </div>
+
+  <div class="session-ui" id="session-ui">
+    <div class="technique-header" id="technique-header"></div>
+    <div class="elapsed-display" id="elapsed-display">00:00</div>
+    <div class="elapsed-label">elapsed</div>
+
+    <div class="phase-bar" id="phase-bar">
+      <div class="phase-seg" id="seg-slow"></div>
+      <div class="phase-seg" id="seg-med"></div>
+      <div class="phase-seg" id="seg-fast"></div>
+    </div>
+    <div class="phase-labels" id="phase-labels">
+      <span class="phase-lbl" id="lbl-slow">Slow</span>
+      <span class="phase-lbl" id="lbl-med">Medium</span>
+      <span class="phase-lbl" id="lbl-fast">Fast</span>
+    </div>
+
+    <div class="orb-wrap">
+      <div class="orb-ring"></div>
+      <div class="orb-ring"></div>
+      <div class="orb-ring"></div>
+      <div class="orb phase-slow" id="orb">
+        <span class="orb-word" id="orb-word">in</span>
+      </div>
+    </div>
+
+    <div class="stats-row" id="stats-row">
+      <div class="stat">
+        <div class="stat-val" id="stat-cycle">1</div>
+        <div class="stat-lbl">Set</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" id="stat-breath">1</div>
+        <div class="stat-lbl">Breath</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" id="stat-total">0</div>
+        <div class="stat-lbl">Total</div>
+      </div>
+    </div>
+
+    <div class="breath-progress">
+      <div class="breath-count" id="breath-count">1 / 20</div>
+      <div class="breath-dots" id="breath-dots"></div>
+    </div>
+  </div>
+
+  <div class="press-ring-wrap">
+    <div class="press-ring" id="press-ring">
+      <svg viewBox="0 0 120 120" width="120" height="120">
+        <circle class="track" cx="60" cy="60" r="54"/>
+        <circle class="fill" id="ring-fill" cx="60" cy="60" r="54"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="press-hint" id="press-hint">Hold 1 second to begin</div>
+</div>
+
+<!-- COMPLETE -->
+<div id="complete-overlay">
+  <div class="complete-glyph">◎</div>
+  <div class="complete-title">Session Complete</div>
+  <div class="complete-sub" id="complete-sub">Well done</div>
+  <button class="btn-again" id="btn-again">Practice Again</button>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

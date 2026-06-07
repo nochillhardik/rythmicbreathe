@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Sudarshan Kriya</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --sand: #f5f0e8;
+  --bark: #8b6f47;
+  --bark-light: #c4a882;
+  --bark-dark: #5c4a30;
+  --text: #3a2e1e;
+  --text-muted: #8b7a65;
+  --slow-color: #7ba3c0;
+  --med-color: #7a9e7e;
+  --fast-color: #c97b4b;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--sand);
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  color: var(--text);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* ── PAGE SYSTEM ── */
+.page {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  background: var(--sand);
+  background-image:
+    radial-gradient(ellipse at 20% 20%, rgba(123,163,192,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 80%, rgba(122,158,126,0.08) 0%, transparent 60%);
+}
+
+.page.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+}
+
+/* ── PAGE 1 — SETUP ── */
+#page-setup {
+  padding: 3rem 1.5rem 4rem;
+  justify-content: flex-start;
+}
+
+h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: 2.2rem;
+  letter-spacing: 0.08em;
+  color: var(--bark-dark);
+  text-align: center;
+  margin-bottom: 0.2rem;
+}
+
+.subtitle {
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.card {
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(139,111,71,0.15);
+  border-radius: 20px;
+  padding: 1.8rem;
+  width: 100%;
+  max-width: 420px;
+  margin-bottom: 1.2rem;
+}
+
+.card-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 1.3rem;
+}
+
+.field { margin-bottom: 1.2rem; }
+.field:last-child { margin-bottom: 0; }
+
+.field label {
+  display: block;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.field input[type="number"],
+.field select {
+  width: 100%;
+  background: rgba(255,255,255,0.75);
+  border: 1px solid rgba(139,111,71,0.22);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  font-size: 1rem;
+  color: var(--text);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color 0.2s;
+}
+
+.field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238b6f47' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-color: rgba(255,255,255,0.75);
+  padding-right: 2.5rem;
+}
+
+.field input:focus, .field select:focus { border-color: var(--bark-light); }
+
+.volume-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.2rem;
+}
+
+.volume-row label {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+input[type="range"] {
+  flex: 1;
+  accent-color: var(--bark);
+  cursor: pointer;
+  height: 4px;
+}
+
+.vol-val {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  min-width: 2.8rem;
+  text-align: right;
+}
+
+.test-btn {
+  display: block;
+  margin: 1.2rem auto 0;
+  background: transparent;
+  border: 1px solid rgba(139,111,71,0.25);
+  border-radius: 30px;
+  padding: 0.5rem 1.5rem;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.test-btn:active { border-color: var(--bark); color: var(--bark-dark); }
+
+.btn-begin {
+  width: 100%;
+  max-width: 420px;
+  padding: 1.1rem;
+  background: var(--bark-dark);
+  color: var(--sand);
+  border: none;
+  border-radius: 16px;
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  font-size: 0.82rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-begin:active { background: var(--bark); }
+
+/* ── PAGE 2 — SESSION ── */
+#page-session {
+  justify-content: center;
+  cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Long press ring */
+.press-ring-wrap {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.press-ring {
+  width: 120px;
+  height: 120px;
+  position: relative;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.press-ring.visible { opacity: 1; }
+
+.press-ring svg {
+  position: absolute;
+  inset: 0;
+  transform: rotate(-90deg);
+}
+
+.press-ring circle.track {
+  fill: none;
+  stroke: rgba(139,111,71,0.15);
+  stroke-width: 3;
+}
+
+.press-ring circle.fill {
+  fill: none;
+  stroke: var(--bark-dark);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 339.3;
+  stroke-dashoffset: 339.3;
+  transition: stroke-dashoffset linear;
+}
+
+.press-hint {
+  position: fixed;
+  bottom: env(safe-area-inset-bottom, 2rem);
+  bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
+  left: 0; right: 0;
+  text-align: center;
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Ready state (not started) */
+.ready-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  pointer-events: none;
+}
+
+.ready-orb {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 38%, rgba(255,255,255,0.9), var(--slow-color));
+  box-shadow: 0 0 60px rgba(123,163,192,0.25);
+  animation: gentle-pulse 4s ease-in-out infinite;
+}
+
+@keyframes gentle-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 60px rgba(123,163,192,0.2); }
+  50% { transform: scale(1.05); box-shadow: 0 0 80px rgba(123,163,192,0.35); }
+}
+
+.ready-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem;
+  font-weight: 300;
+  color: var(--bark-dark);
+  letter-spacing: 0.05em;
+}
+
+.ready-sub {
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Active session UI */
+.session-ui {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.4rem;
+  width: 100%;
+  pointer-events: none;
+}
+
+.timer-display {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 3.8rem;
+  font-weight: 300;
+  color: var(--bark-dark);
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+
+.timer-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: -0.8rem;
+}
+
+/* Phase bar */
+.phase-bar {
+  display: flex;
+  gap: 6px;
+  width: 260px;
+}
+
+.phase-seg {
+  flex: 1;
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(139,111,71,0.15);
+  transition: background 0.5s;
+}
+
+.phase-seg.active-slow { background: var(--slow-color); }
+.phase-seg.active-med  { background: var(--med-color); }
+.phase-seg.active-fast { background: var(--fast-color); }
+
+.phase-labels {
+  display: flex;
+  width: 260px;
+  justify-content: space-between;
+  margin-top: -0.5rem;
+}
+
+.phase-lbl {
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: color 0.3s;
+  flex: 1;
+  text-align: center;
+}
+
+.phase-lbl.active { color: var(--text); }
+
+/* Orb */
+.orb-wrap {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.orb-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(139,111,71,0.12);
+}
+
+.orb-ring:nth-child(1) { width: 240px; height: 240px; animation: rpulse 4s ease-in-out infinite 0s; }
+.orb-ring:nth-child(2) { width: 195px; height: 195px; animation: rpulse 4s ease-in-out infinite 0.4s; }
+.orb-ring:nth-child(3) { width: 150px; height: 150px; animation: rpulse 4s ease-in-out infinite 0.8s; }
+
+@keyframes rpulse {
+  0%,100% { opacity: 0.4; }
+  50% { opacity: 0.1; }
+}
+
+.orb {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 38%, rgba(255,255,255,0.9), var(--slow-color));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 50px rgba(123,163,192,0.3);
+  transition: background 0.5s, box-shadow 0.5s;
+}
+
+.orb.phase-slow { background: radial-gradient(circle at 38% 38%, rgba(255,255,255,0.9), var(--slow-color)); box-shadow: 0 0 50px rgba(123,163,192,0.35); }
+.orb.phase-med  { background: radial-gradient(circle at 38% 38%, rgba(255,255,255,0.9), var(--med-color)); box-shadow: 0 0 50px rgba(122,158,126,0.35); }
+.orb.phase-fast { background: radial-gradient(circle at 38% 38%, rgba(255,255,255,0.9), var(--fast-color)); box-shadow: 0 0 50px rgba(201,123,75,0.35); }
+
+.orb.inhale { animation: orb-in var(--bd, 2s) ease-in-out forwards; }
+.orb.exhale { animation: orb-out var(--bd, 2s) ease-in-out forwards; }
+
+@keyframes orb-in  { from { width:110px; height:110px; } to { width:145px; height:145px; } }
+@keyframes orb-out { from { width:145px; height:145px; } to { width:110px; height:110px; } }
+
+.orb-word {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: 1.05rem;
+  color: white;
+  letter-spacing: 0.1em;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+/* Stats */
+.stats-row {
+  display: flex;
+  gap: 10px;
+}
+
+.stat {
+  background: rgba(255,255,255,0.5);
+  border: 1px solid rgba(139,111,71,0.12);
+  border-radius: 14px;
+  padding: 0.8rem 1.2rem;
+  text-align: center;
+  min-width: 72px;
+}
+
+.stat-val {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.7rem;
+  font-weight: 300;
+  color: var(--bark-dark);
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.stat-lbl {
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Breath progress */
+.breath-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.breath-count {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  color: var(--bark-dark);
+  min-width: 50px;
+}
+
+.breath-dots {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  max-width: 200px;
+}
+
+.bdot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(139,111,71,0.18);
+  transition: background 0.2s, transform 0.15s;
+}
+.bdot.done    { background: var(--bark-light); }
+.bdot.current { background: var(--bark-dark); transform: scale(1.4); }
+
+/* Complete overlay */
+#complete-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--sand);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  z-index: 20;
+  animation: fadein 0.6s ease;
+}
+
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+
+.complete-glyph {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 5rem;
+  color: var(--med-color);
+  line-height: 1;
+}
+
+.complete-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 300;
+  color: var(--bark-dark);
+  letter-spacing: 0.05em;
+}
+
+.complete-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.15em;
+  text-align: center;
+}
+
+.btn-again {
+  margin-top: 0.5rem;
+  padding: 0.85rem 2.8rem;
+  background: var(--bark-dark);
+  color: var(--sand);
+  border: none;
+  border-radius: 30px;
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.btn-again:active { background: var(--bark); }
+</style>
+</head>
+<body>
+
+<!-- ══ PAGE 1: SETUP ══ -->
+<div class="page" id="page-setup">
+  <h1>Sudarshan Kriya</h1>
+  <p class="subtitle">Art of Living · Breathing Guide</p>
+
+  <div class="card">
+    <div class="card-label">Session</div>
+    <div class="field">
+      <label>Duration (minutes)</label>
+      <input type="number" id="duration-input" value="20" min="1" max="120">
+    </div>
+    <div class="field">
+      <label>Audio Cue</label>
+      <select id="cue-select">
+        <optgroup label="Bells &amp; Bowls">
+          <option value="singing-bowl">Singing Bowl</option>
+          <option value="temple-bell">Temple Bell</option>
+          <option value="soft-chime">Soft Chime</option>
+          <option value="tibetan-bowl">Tibetan Bowl</option>
+        </optgroup>
+        <optgroup label="Beeps">
+          <option value="beep">Beep</option>
+          <option value="soft-beep">Soft Beep</option>
+        </optgroup>
+        <optgroup label="Voice">
+          <option value="voice-male">Voice — Male</option>
+          <option value="voice-female">Voice — Female</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="volume-row">
+      <label>Volume</label>
+      <input type="range" id="vol-slider" min="0" max="100" value="70">
+      <span class="vol-val" id="vol-val">70%</span>
+    </div>
+    <button class="test-btn" id="test-btn">Test Sound</button>
+  </div>
+
+  <button class="btn-begin" id="begin-btn">Continue to Practice</button>
+</div>
+
+<!-- ══ PAGE 2: SESSION ══ -->
+<div class="page hidden" id="page-session">
+
+  <!-- Ready state -->
+  <div class="ready-state" id="ready-state">
+    <div class="ready-orb"></div>
+    <div class="ready-title">Ready</div>
+    <div class="ready-sub">Hold anywhere to begin</div>
+  </div>
+
+  <!-- Active session UI -->
+  <div class="session-ui" id="session-ui">
+    <div class="timer-display" id="timer-display">20:00</div>
+    <div class="timer-label">remaining</div>
+
+    <div class="phase-bar">
+      <div class="phase-seg" id="seg-slow"></div>
+      <div class="phase-seg" id="seg-med"></div>
+      <div class="phase-seg" id="seg-fast"></div>
+    </div>
+    <div class="phase-labels">
+      <span class="phase-lbl" id="lbl-slow">Slow</span>
+      <span class="phase-lbl" id="lbl-med">Medium</span>
+      <span class="phase-lbl" id="lbl-fast">Fast</span>
+    </div>
+
+    <div class="orb-wrap">
+      <div class="orb-ring"></div>
+      <div class="orb-ring"></div>
+      <div class="orb-ring"></div>
+      <div class="orb phase-slow" id="orb">
+        <span class="orb-word" id="orb-word">in</span>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-val" id="stat-cycle">1</div>
+        <div class="stat-lbl">Cycle</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" id="stat-breath">1</div>
+        <div class="stat-lbl">Breath</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" id="stat-total">0</div>
+        <div class="stat-lbl">Total</div>
+      </div>
+    </div>
+
+    <div class="breath-progress">
+      <div class="breath-count" id="breath-count">1 / 20</div>
+      <div class="breath-dots" id="breath-dots"></div>
+    </div>
+  </div>
+
+  <!-- Long press ring -->
+  <div class="press-ring-wrap">
+    <div class="press-ring" id="press-ring">
+      <svg viewBox="0 0 120 120" width="120" height="120">
+        <circle class="track" cx="60" cy="60" r="54"/>
+        <circle class="fill" id="ring-fill" cx="60" cy="60" r="54"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="press-hint" id="press-hint">Hold 1 second to begin</div>
+</div>
+
+<!-- ══ COMPLETE OVERLAY ══ -->
+<div id="complete-overlay">
+  <div class="complete-glyph">◎</div>
+  <div class="complete-title">Session Complete</div>
+  <div class="complete-sub" id="complete-sub">Well done</div>
+  <button class="btn-again" onclick="resetAll()">Practice Again</button>
+</div>
+
+<script>
+// ── Audio Context ──────────────────────────────────────────────
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let actx = null;
+
+function getCtx() {
+  if (!actx) actx = new AudioCtx();
+  if (actx.state === 'suspended') actx.resume();
+  return actx;
+}
+
+function getVol() { return parseInt(document.getElementById('vol-slider').value) / 100; }
+
+// ── Sound generators ───────────────────────────────────────────
+function bowl(isIn, freq1, freq2, harmonics, dur) {
+  const ctx = getCtx();
+  const freq = isIn ? freq1 : freq2;
+  const v = getVol() * 0.5;
+  harmonics.forEach((h, i) => {
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type = 'sine'; o.frequency.value = freq * h;
+    const hv = v / (i * 0.7 + 1);
+    g.gain.setValueAtTime(0, ctx.currentTime);
+    g.gain.linearRampToValueAtTime(hv, ctx.currentTime + 0.06);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    o.start(); o.stop(ctx.currentTime + dur);
+  });
+}
+
+function playSingingBowl(isIn) { bowl(isIn, 220, 174, [1,2,3,4], 2.5); }
+function playTempleBell(isIn)  { bowl(isIn, 880, 660, [1,2.756,5.404], 1.8); }
+function playSoftChime(isIn)   { bowl(isIn, 1046, 784, [1,2,3], 1.2); }
+function playTibetanBowl(isIn) { bowl(isIn, 136.1, 111, [1,2.2,3.5,4.9], 3.5); }
+
+function playBeep(isIn) {
+  const ctx = getCtx();
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.connect(g); g.connect(ctx.destination);
+  o.type = 'square'; o.frequency.value = isIn ? 880 : 440;
+  const v = getVol() * 0.25;
+  g.gain.setValueAtTime(v, ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+  o.start(); o.stop(ctx.currentTime + 0.15);
+}
+
+function playSoftBeep(isIn) {
+  const ctx = getCtx();
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.connect(g); g.connect(ctx.destination);
+  o.type = 'sine'; o.frequency.value = isIn ? 660 : 440;
+  const v = getVol() * 0.35;
+  g.gain.setValueAtTime(0, ctx.currentTime);
+  g.gain.linearRampToValueAtTime(v, ctx.currentTime + 0.02);
+  g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+  o.start(); o.stop(ctx.currentTime + 0.35);
+}
+
+function playFastTick() {
+  const ctx = getCtx();
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.connect(g); g.connect(ctx.destination);
+  o.type = 'sine'; o.frequency.value = 1200;
+  const v = getVol() * 0.15;
+  g.gain.setValueAtTime(v, ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+  o.start(); o.stop(ctx.currentTime + 0.06);
+}
+
+function speakCue(text, gender) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.volume = getVol(); u.rate = 0.85;
+  u.pitch = gender === 'male' ? 0.7 : 1.3;
+  const voices = window.speechSynthesis.getVoices();
+  const keys = gender === 'male'
+    ? ['male','david','daniel','alex','james','mark']
+    : ['female','samantha','karen','victoria','zoe','kate'];
+  const match = voices.find(v => keys.some(k => v.name.toLowerCase().includes(k)));
+  if (match) u.voice = match;
+  window.speechSynthesis.speak(u);
+}
+
+function playCue(isIn, isFast) {
+  const cue = document.getElementById('cue-select').value;
+  if (isFast && !cue.startsWith('voice')) { playFastTick(); return; }
+  switch(cue) {
+    case 'singing-bowl':  playSingingBowl(isIn); break;
+    case 'temple-bell':   playTempleBell(isIn);  break;
+    case 'soft-chime':    playSoftChime(isIn);   break;
+    case 'tibetan-bowl':  playTibetanBowl(isIn); break;
+    case 'beep':          playBeep(isIn);         break;
+    case 'soft-beep':     playSoftBeep(isIn);    break;
+    case 'voice-male':    speakCue(isIn ? 'in' : 'out', 'male');   break;
+    case 'voice-female':  speakCue(isIn ? 'in' : 'out', 'female'); break;
+  }
+}
+
+// ── Session state ──────────────────────────────────────────────
+const PHASES = [
+  { name:'slow', breaths:20, dur:4000 },
+  { name:'med',  breaths:40, dur:2000 },
+  { name:'fast', breaths:40, dur:1000 },
+];
+
+let sessionActive = false;
+let breathTO = null;
+let timerIV = null;
+let sessionEndTime = null;
+let phaseIdx = 0;
+let breathNum = 0;
+let half = 0; // 0=inhale 1=exhale
+let totalBreaths = 0;
+let cycleCount = 1;
+
+function buildDots(count) {
+  const c = document.getElementById('breath-dots');
+  c.innerHTML = '';
+  const n = Math.min(count, 40);
+  for (let i = 0; i < n; i++) {
+    const d = document.createElement('div');
+    d.className = 'bdot';
+    d.id = 'dot-' + i;
+    c.appendChild(d);
+  }
+}
+
+function updateDots(current, total) {
+  const n = Math.min(total, 40);
+  for (let i = 0; i < n; i++) {
+    const d = document.getElementById('dot-' + i);
+    if (!d) continue;
+    d.className = 'bdot' + (i < current ? ' done' : i === current ? ' current' : '');
+  }
+}
+
+function updatePhaseUI(name) {
+  ['slow','med','fast'].forEach(p => {
+    document.getElementById('seg-' + p).className = 'phase-seg' + (p === name ? ' active-' + p : '');
+    document.getElementById('lbl-' + p).className  = 'phase-lbl' + (p === name ? ' active' : '');
+  });
+  const orb = document.getElementById('orb');
+  orb.className = 'orb phase-' + name;
+}
+
+function fmt(ms) {
+  const s = Math.ceil(ms / 1000);
+  return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
+}
+
+function breathStep() {
+  if (!sessionActive) return;
+  if (Date.now() >= sessionEndTime) { endSession(); return; }
+
+  const phase = PHASES[phaseIdx];
+  const isIn = half === 0;
+  const isFast = phase.name === 'fast';
+  const halfDur = phase.dur / 2;
+
+  const orb = document.getElementById('orb');
+  const word = document.getElementById('orb-word');
+  word.textContent = isIn ? 'in' : 'out';
+  orb.style.setProperty('--bd', (halfDur/1000) + 's');
+  orb.classList.remove('inhale','exhale');
+  void orb.offsetWidth;
+  orb.classList.add(isIn ? 'inhale' : 'exhale');
+
+  playCue(isIn, isFast);
+
+  if (half === 1) {
+    breathNum++;
+    totalBreaths++;
+    document.getElementById('stat-total').textContent = totalBreaths;
+
+    if (breathNum >= phase.breaths) {
+      phaseIdx++;
+      breathNum = 0;
+      if (phaseIdx >= PHASES.length) {
+        phaseIdx = 0;
+        cycleCount++;
+        document.getElementById('stat-cycle').textContent = cycleCount;
+      }
+      updatePhaseUI(PHASES[phaseIdx].name);
+      buildDots(PHASES[phaseIdx].breaths);
+    }
+    updateDots(breathNum, PHASES[phaseIdx].breaths);
+    document.getElementById('stat-breath').textContent = breathNum + 1;
+    document.getElementById('breath-count').textContent = (breathNum+1) + ' / ' + PHASES[phaseIdx].breaths;
+  }
+
+  half = 1 - half;
+  breathTO = setTimeout(breathStep, halfDur);
+}
+
+function startSession() {
+  const minutes = parseInt(document.getElementById('duration-input').value) || 20;
+  sessionActive = true;
+  phaseIdx = 0; breathNum = 0; half = 0; totalBreaths = 0; cycleCount = 1;
+
+  document.getElementById('timer-display').textContent = fmt(minutes * 60000);
+  document.getElementById('stat-cycle').textContent = '1';
+  document.getElementById('stat-breath').textContent = '1';
+  document.getElementById('stat-total').textContent = '0';
+  document.getElementById('breath-count').textContent = '1 / 20';
+
+  updatePhaseUI('slow');
+  buildDots(20);
+  updateDots(0, 20);
+
+  document.getElementById('ready-state').style.display = 'none';
+  document.getElementById('session-ui').style.display = 'flex';
+  document.getElementById('press-hint').textContent = 'Hold 1 second to stop';
+
+  sessionEndTime = Date.now() + minutes * 60000;
+  timerIV = setInterval(() => {
+    const rem = sessionEndTime - Date.now();
+    if (rem <= 0) { document.getElementById('timer-display').textContent = '00:00'; endSession(); }
+    else document.getElementById('timer-display').textContent = fmt(rem);
+  }, 250);
+
+  breathStep();
+}
+
+function endSession() {
+  sessionActive = false;
+  clearTimeout(breathTO);
+  clearInterval(timerIV);
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+
+  const overlay = document.getElementById('complete-overlay');
+  const cyclesDone = cycleCount - 1 + (phaseIdx > 0 || breathNum > 0 ? 1 : 0);
+  document.getElementById('complete-sub').textContent =
+    cyclesDone + ' cycle' + (cyclesDone !== 1 ? 's' : '') + ' · ' + totalBreaths + ' total breaths';
+  overlay.style.display = 'flex';
+}
+
+function resetAll() {
+  document.getElementById('complete-overlay').style.display = 'none';
+  document.getElementById('ready-state').style.display = 'flex';
+  document.getElementById('session-ui').style.display = 'none';
+  document.getElementById('press-hint').textContent = 'Hold 1 second to begin';
+  document.getElementById('page-session').classList.add('hidden');
+  document.getElementById('page-setup').classList.remove('hidden');
+}
+
+// ── Long press logic ───────────────────────────────────────────
+const HOLD_MS = 1000;
+let pressStart = null;
+let pressRAF = null;
+const ringFill = document.getElementById('ring-fill');
+const pressRing = document.getElementById('press-ring');
+const CIRCUMFERENCE = 2 * Math.PI * 54; // 339.3
+
+function startPress(e) {
+  if (e.target.closest('button, input, select')) return;
+  e.preventDefault();
+  getCtx(); // unlock audio on first touch
+  pressStart = Date.now();
+  pressRing.classList.add('visible');
+  ringFill.style.transition = 'none';
+  ringFill.style.strokeDashoffset = CIRCUMFERENCE;
+
+  requestAnimationFrame(animateRing);
+}
+
+function animateRing() {
+  if (!pressStart) return;
+  const elapsed = Date.now() - pressStart;
+  const progress = Math.min(elapsed / HOLD_MS, 1);
+  ringFill.style.strokeDashoffset = CIRCUMFERENCE * (1 - progress);
+
+  if (progress >= 1) {
+    cancelPress();
+    if (sessionActive) endSession();
+    else if (document.getElementById('session-ui').style.display === 'flex' || true) startSession();
+    return;
+  }
+  pressRAF = requestAnimationFrame(animateRing);
+}
+
+function cancelPress() {
+  pressStart = null;
+  if (pressRAF) { cancelAnimationFrame(pressRAF); pressRAF = null; }
+  pressRing.classList.remove('visible');
+  ringFill.style.strokeDashoffset = CIRCUMFERENCE;
+}
+
+const sessionPage = document.getElementById('page-session');
+sessionPage.addEventListener('touchstart', startPress, { passive: false });
+sessionPage.addEventListener('touchend', cancelPress, { passive: false });
+sessionPage.addEventListener('touchcancel', cancelPress, { passive: false });
+sessionPage.addEventListener('mousedown', startPress);
+sessionPage.addEventListener('mouseup', cancelPress);
+sessionPage.addEventListener('mouseleave', cancelPress);
+
+// ── Page navigation ────────────────────────────────────────────
+document.getElementById('begin-btn').addEventListener('click', () => {
+  getCtx();
+  if (window.speechSynthesis) window.speechSynthesis.getVoices();
+  document.getElementById('page-setup').classList.add('hidden');
+  document.getElementById('page-session').classList.remove('hidden');
+});
+
+document.getElementById('vol-slider').addEventListener('input', function() {
+  document.getElementById('vol-val').textContent = this.value + '%';
+});
+
+document.getElementById('test-btn').addEventListener('click', function() {
+  getCtx();
+  playCue(true, false);
+  setTimeout(() => playCue(false, false), 1500);
+});
+
+if (window.speechSynthesis) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+}
+</script>
+</body>
+</html>

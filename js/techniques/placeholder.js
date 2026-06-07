@@ -1,0 +1,32 @@
+export const placeholders = [
+  {
+    id: 'body-scan',
+    name: 'Body Scan',
+    description: 'Coming soon',
+    defaultSets: 1,
+    defaultSound: 'singing-bowl',
+    isAvailable: false,
+    kind: 'placeholder',
+    getSetStructure() { return 'Coming soon'; },
+  },
+  {
+    id: 'loving-kindness',
+    name: 'Loving-Kindness',
+    description: 'Coming soon',
+    defaultSets: 1,
+    defaultSound: 'singing-bowl',
+    isAvailable: false,
+    kind: 'placeholder',
+    getSetStructure() { return 'Coming soon'; },
+  },
+  {
+    id: 'four-seven-eight',
+    name: '4-7-8 Breathing',
+    description: 'Coming soon',
+    defaultSets: 1,
+    defaultSound: 'singing-bowl',
+    isAvailable: false,
+    kind: 'placeholder',
+    getSetStructure() { return 'Coming soon'; },
+  },
+];
