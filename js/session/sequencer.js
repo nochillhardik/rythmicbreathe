@@ -3,12 +3,14 @@ import {
   announceTransition,
   announceSessionComplete,
   playCompletionChime,
-  speakAsync,
+  speakInstruction,
+  speakInstructionAsync,
 } from '../audio.js';
 import { getTechnique } from '../techniques/registry.js';
 import { TRANSITION_MS } from './constants.js';
 
 const TRANSITION_WARNING_MS = 25000;
+const REST_WARNING_MS = 5000;
 
 export class SessionSequencer {
   constructor(controller) {
@@ -35,7 +37,7 @@ export class SessionSequencer {
         if (!technique) continue;
 
         if (i === 0) {
-          speakAsync(`Starting ${technique.name}`);
+          speakInstructionAsync(`Starting ${technique.name}`, 'session-start');
         }
 
         this.controller.onTechniqueStart(technique, item);
@@ -89,8 +91,7 @@ export class SessionSequencer {
       if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
 
       if (event.type === 'rest') {
-        this.controller.onRest(event);
-        speakAsync('Rest');
+        await this.runRestPeriod(event.durationMs, signal);
         continue;
       }
 
@@ -103,11 +104,20 @@ export class SessionSequencer {
   }
 
   async runIntraRest(seconds, signal) {
-    if (seconds <= 0) return;
-    const durationMs = seconds * 1000;
+    await this.runRestPeriod(seconds * 1000, signal);
+  }
+
+  async runRestPeriod(durationMs, signal) {
+    if (durationMs <= 0) return;
     this.controller.onRest({ durationMs, label: 'Rest' });
-    speakAsync('Rest');
-    await waitUntil(durationMs, signal);
+    speakInstructionAsync('Rest', 'rest');
+    const tailMs = Math.min(REST_WARNING_MS, durationMs);
+    const mainMs = durationMs - tailMs;
+    await waitUntil(mainMs, signal);
+    if (tailMs === REST_WARNING_MS) {
+      await speakInstruction('Starting again', 'rest-end');
+    }
+    await waitUntil(tailMs, signal);
   }
 
   async runTransition(nextName, signal) {

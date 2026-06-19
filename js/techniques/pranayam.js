@@ -61,7 +61,6 @@ export const pranayam = {
       }
       if (ci < CYCLES.length - 1 && restSeconds > 0) {
         yield { type: 'rest', durationMs: restMs, label: 'Rest' };
-        await wait(restMs, ctx.signal);
       }
     }
     return { breaths: totalBreaths };

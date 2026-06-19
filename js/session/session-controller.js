@@ -1,5 +1,5 @@
 import { SessionSequencer, finishSessionComplete } from './sequencer.js';
-import { unlockAudio, resetLongPressTicks, playLongPressTick, speakAsync } from '../audio.js';
+import { unlockAudio, resetLongPressTicks, playLongPressTick, announceSessionStopped } from '../audio.js';
 
 const HOLD_MS = 1000;
 const CIRCUMFERENCE = 2 * Math.PI * 54;
@@ -136,7 +136,7 @@ export class SessionController {
     if (window.speechSynthesis) window.speechSynthesis.cancel();
     this.el.completeSub.textContent = 'Session stopped early';
     this.el.completeOverlay.style.display = 'flex';
-    speakAsync('Session stopped');
+    announceSessionStopped();
   }
 
   async startSession() {

@@ -43,7 +43,21 @@ Each sequence row has **Rest (sec)** (default **20**, min **0**).
 | After last set of a technique | No — goes to next technique or session end |
 | Between techniques | **30s fixed** (`"Next: …"` / `"Starting …"`) — not configurable |
 
-Spoken **"Rest"** at the start of each intra-technique rest. Set Rest to **0** to skip pauses for that technique.
+Spoken **"Rest"** at the start of each intra-technique or inter-set rest (when vocal guidance allows). **"Starting again"** is spoken 5 seconds before each such rest ends (skipped if rest ≤ 5s). Set Rest to **0** to skip pauses for that technique.
+
+## Vocal guidance (Global)
+
+Setup page **Global** card includes a **Vocal guidance** master switch (default: **Full guidance**). Controls instructional speech only — per-row Voice Male/Female breath cues (in/out/hold) are unaffected.
+
+| Mode | What is spoken |
+|------|----------------|
+| **Full guidance** | Rest, Starting again, Starting [technique], Next/Starting transitions, session complete, session stopped |
+| **Technique changes only** | Starting [first technique], Next: …, Starting … (between techniques) |
+| **Off** | No instructional speech |
+
+Instructional voice uses male Siri-style TTS where available (Web Speech API); falls back to best male system voice. Row-level Voice sound is separate.
+
+Logic: `shouldSpeakInstruction()` and `speakInstruction()` in `js/audio.js`; rest timing in `runRestPeriod()` in `js/session/sequencer.js`.
 
 ## File map
 
@@ -73,12 +87,15 @@ Transitions between techniques: spoken "Next: …" then after 25s "Starting …"
 1. **Open locally:** serve the folder (ES modules need HTTP). Example: `npx serve .` then open the URL on phone/PC.
 2. **Default load:** sequence shows Box Breathing (1), Burst Detox (3), Pulse Meditation (1); total ~14 min 52 sec.
 3. **GitHub Pages:** push repo; open your Pages URL on mobile.
-4. **Box Breathing, rest=20:** hear "Rest" twice (after first 8 and second 8 breaths); no rest after 6 breaths.
-5. **Burst Detox, 3 sets, rest=20:** hear "Rest" twice between sets; no rest after set 3.
-6. **Pulse Meditation → Burst Detox:** no rest after Pulse Meditation's last set; hear "Next: Burst Detox" immediately.
-7. **rest=0:** no "Rest" pauses for that technique.
-8. **Duration UI:** change sets or rest on a row — per-row time and total update immediately.
-9. **Stop early:** hold 1s during session → hear "Session stopped".
+4. **Box Breathing, rest=20, Full guidance:** hear "Rest" twice (after first 8 and second 8 breaths); "Starting again" ~5s before each rest ends; no rest after 6 breaths.
+5. **Burst Detox, 3 sets, rest=20, Full guidance:** hear "Rest" + "Starting again" twice between sets; no rest after set 3.
+6. **Pulse Meditation → Burst Detox:** no rest after Pulse Meditation's last set; hear "Next: Burst Detox" immediately (Full or Technique changes only).
+7. **Technique changes only:** no Rest / Starting again; transitions and first Starting still spoken.
+8. **Vocal guidance Off:** no instructional speech; row breath sounds still play.
+9. **rest=0:** no rest pauses or rest speech.
+10. **rest≤5:** "Rest" at start only (Full mode); no "Starting again".
+11. **Duration UI:** change sets or rest on a row — per-row time and total update immediately.
+12. **Stop early:** hold 1s during session → hear "Session stopped" (Full guidance only).
 
 ## Session flow
 

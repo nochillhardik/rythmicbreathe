@@ -1,4 +1,4 @@
-import { setVolume, unlockAudio, initVoices } from './audio.js';
+import { setVolume, unlockAudio, initVoices, setVocalMode } from './audio.js';
 import { SessionController } from './session/session-controller.js';
 import { initDragSequence, getSequence } from './ui/drag-sequence.js';
 
@@ -10,6 +10,7 @@ const el = {
   beginBtn: document.getElementById('begin-btn'),
   volSlider: document.getElementById('vol-slider'),
   volVal: document.getElementById('vol-val'),
+  vocalMode: document.getElementById('vocal-mode'),
   readyState: document.getElementById('ready-state'),
   sessionUi: document.getElementById('session-ui'),
   transitionState: document.getElementById('transition-state'),
@@ -67,6 +68,11 @@ el.volSlider.addEventListener('input', () => {
 });
 
 setVolume(parseInt(el.volSlider.value, 10) / 100);
+
+el.vocalMode.addEventListener('change', () => {
+  setVocalMode(el.vocalMode.value);
+});
+setVocalMode(el.vocalMode.value);
 
 el.beginBtn.addEventListener('click', () => {
   const seq = getSequence();

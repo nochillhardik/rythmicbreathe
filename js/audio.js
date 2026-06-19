@@ -63,6 +63,27 @@ export function getVolume() {
   return volume;
 }
 
+export const VOCAL_MODES = ['full', 'transitions', 'none'];
+
+let vocalMode = 'full';
+
+export function setVocalMode(mode) {
+  vocalMode = VOCAL_MODES.includes(mode) ? mode : 'full';
+}
+
+export function getVocalMode() {
+  return vocalMode;
+}
+
+/** @param {'rest'|'rest-end'|'transition'|'session-start'|'session-end'|'session-stop'} kind */
+export function shouldSpeakInstruction(kind) {
+  if (vocalMode === 'none') return false;
+  if (vocalMode === 'transitions') {
+    return kind === 'transition' || kind === 'session-start';
+  }
+  return true;
+}
+
 export function unlockAudio() {
   if (!actx) actx = new AudioCtx();
   if (actx.state === 'suspended') actx.resume();
@@ -115,6 +136,23 @@ function voiceGender(cueId) {
   return cueId === 'voice-male' ? 'male' : 'female';
 }
 
+const MALE_VOICE_KEYS = ['siri', 'male', 'david', 'daniel', 'alex', 'james', 'mark', 'aaron', 'fred'];
+const FEMALE_VOICE_KEYS = ['female', 'samantha', 'karen', 'victoria', 'zoe', 'kate'];
+
+function pickVoice(gender, preferSiri = false) {
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices.length) return null;
+  const keys = gender === 'female' ? FEMALE_VOICE_KEYS : MALE_VOICE_KEYS;
+  if (preferSiri) {
+    const siri = voices.find(v => {
+      const n = v.name.toLowerCase();
+      return n.includes('siri') && (gender !== 'male' || !n.includes('female'));
+    });
+    if (siri) return siri;
+  }
+  return voices.find(v => keys.some(k => v.name.toLowerCase().includes(k))) ?? null;
+}
+
 export function speak(text, opts = {}) {
   if (!window.speechSynthesis) return Promise.resolve();
   return new Promise((resolve) => {
@@ -137,11 +175,7 @@ export function speak(text, opts = {}) {
       u.rate = opts.rate ?? 0.85;
       u.pitch = opts.gender === 'female' ? 1.3 : opts.gender === 'male' ? 0.7 : 1;
       if (opts.gender) {
-        const voices = window.speechSynthesis.getVoices();
-        const keys = opts.gender === 'male'
-          ? ['male', 'david', 'daniel', 'alex', 'james', 'mark']
-          : ['female', 'samantha', 'karen', 'victoria', 'zoe', 'kate'];
-        const match = voices.find(v => keys.some(k => v.name.toLowerCase().includes(k)));
+        const match = pickVoice(opts.gender, opts.preferSiri);
         if (match) u.voice = match;
       }
       u.onend = () => { clearTimeout(timer); finish(); };
@@ -157,6 +191,19 @@ export function speak(text, opts = {}) {
 /** Speak without blocking session flow (mobile-safe). */
 export function speakAsync(text, opts = {}) {
   void speak(text, opts);
+}
+
+const INSTRUCTION_SPEAK_OPTS = { gender: 'male', preferSiri: true, rate: 0.85 };
+
+/** Gated instructional speech (male Siri-style); does not affect row breath voice cues. */
+export function speakInstruction(text, kind, opts = {}) {
+  if (!shouldSpeakInstruction(kind)) return Promise.resolve();
+  return speak(text, { ...INSTRUCTION_SPEAK_OPTS, ...opts });
+}
+
+export function speakInstructionAsync(text, kind, opts = {}) {
+  if (!shouldSpeakInstruction(kind)) return;
+  void speak(text, { ...INSTRUCTION_SPEAK_OPTS, ...opts });
 }
 
 export function playPhaseCue(cueId, phase, techniqueKind = 'two-phase') {
@@ -181,19 +228,15 @@ export function playPhaseCue(cueId, phase, techniqueKind = 'two-phase') {
 
 export function announceTransition(techniqueName, type) {
   const text = type === 'next' ? `Next: ${techniqueName}` : `Starting ${techniqueName}`;
-  return speak(text, { timeout: 6000 });
-}
-
-export function announceRest() {
-  return speak('Rest');
+  return speakInstruction(text, 'transition', { timeout: 6000 });
 }
 
 export function announceSessionComplete(summary) {
-  return speak(`Session complete. ${summary}`);
+  return speakInstruction(`Session complete. ${summary}`, 'session-end', { timeout: 8000 });
 }
 
 export function announceSessionStopped() {
-  return speak('Session stopped');
+  return speakInstruction('Session stopped', 'session-stop');
 }
 
 export function playLongPressTick(progress) {
