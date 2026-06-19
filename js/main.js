@@ -54,6 +54,7 @@ initDragSequence({
   pool: el.pool,
   sequenceList: el.sequenceList,
   beginButton: el.beginBtn,
+  totalTime: document.getElementById('session-total-time'),
   onSequenceChange: (seq) => {
     controller.setSequence(seq);
   },

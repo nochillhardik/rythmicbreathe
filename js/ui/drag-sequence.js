@@ -1,14 +1,78 @@
 import { ALL_TECHNIQUES, isRunnable } from '../techniques/registry.js';
 import { SOUND_OPTIONS, buildSoundSelectOptions, testTechniqueSound } from '../audio.js';
 
-let sequence = [];
-let poolEl, sequenceEl, beginBtn, onChange;
+const DEFAULT_SEQUENCE = [
+  { id: 'pranayam' },
+  { id: 'bhastrika' },
+  { id: 'sudarshan-kriya' },
+];
 
-export function initDragSequence({ pool, sequenceList, beginButton, onSequenceChange }) {
+let sequence = [];
+let poolEl, sequenceEl, beginBtn, totalTimeEl, onChange;
+let durationApi = null;
+
+function buildSequenceItem(id) {
+  if (!isRunnable(id)) return null;
+  const t = ALL_TECHNIQUES.find(x => x.id === id);
+  if (!t) return null;
+  return {
+    id: t.id,
+    name: t.name,
+    description: t.description,
+    sets: t.defaultSets,
+    sound: t.defaultSound,
+    restSeconds: t.defaultRestSeconds ?? 20,
+  };
+}
+
+function loadDefaultSequence() {
+  sequence = DEFAULT_SEQUENCE.map(entry => buildSequenceItem(entry.id)).filter(Boolean);
+}
+
+async function getDurationApi() {
+  if (!durationApi) {
+    durationApi = await import('../session/duration.js');
+  }
+  return durationApi;
+}
+
+function updateRowDuration(el, item) {
+  getDurationApi()
+    .then(({ formatDuration, estimateItemDurationMs }) => {
+      el.textContent = `~${formatDuration(estimateItemDurationMs(item))}`;
+    })
+    .catch(() => {
+      el.textContent = '';
+    });
+}
+
+function updateDurationDisplay() {
+  if (!totalTimeEl) return;
+  if (!sequence.length) {
+    totalTimeEl.hidden = true;
+    totalTimeEl.textContent = '';
+    return;
+  }
+  getDurationApi()
+    .then(({ formatDuration, estimateSequenceDurationMs }) => {
+      totalTimeEl.hidden = false;
+      totalTimeEl.textContent = `Total: ~${formatDuration(estimateSequenceDurationMs(sequence))}`;
+    })
+    .catch(() => {
+      totalTimeEl.hidden = true;
+      totalTimeEl.textContent = '';
+    });
+}
+
+loadDefaultSequence();
+
+export function initDragSequence({ pool, sequenceList, beginButton, totalTime, onSequenceChange }) {
   poolEl = pool;
   sequenceEl = sequenceList;
   beginBtn = beginButton;
+  totalTimeEl = totalTime;
   onChange = onSequenceChange;
+  loadDefaultSequence();
   renderPool();
   renderSequence();
 
@@ -46,6 +110,7 @@ function renderSequence() {
   if (sequence.length === 0) {
     sequenceEl.innerHTML = '<p class="sequence-empty">Drag techniques here to build your session</p>';
     beginBtn.disabled = true;
+    updateDurationDisplay();
     onChange?.(sequence);
     return;
   }
@@ -54,6 +119,7 @@ function renderSequence() {
     sequenceEl.appendChild(createSequenceRow(item, index));
   });
   beginBtn.disabled = false;
+  updateDurationDisplay();
   onChange?.(sequence);
 }
 
@@ -73,7 +139,11 @@ function createSequenceRow(item, index) {
 
   const info = document.createElement('div');
   info.className = 'row-info';
+  const durationEl = document.createElement('div');
+  durationEl.className = 'row-duration';
+  updateRowDuration(durationEl, item);
   info.innerHTML = `<div class="row-name">${item.name}</div><div class="row-desc">${item.description}</div>`;
+  info.appendChild(durationEl);
 
   const setsField = document.createElement('div');
   setsField.className = 'row-sets';
@@ -86,6 +156,8 @@ function createSequenceRow(item, index) {
   setsInput.addEventListener('change', () => {
     item.sets = Math.max(1, parseInt(setsInput.value, 10) || 1);
     setsInput.value = item.sets;
+    updateRowDuration(durationEl, item);
+    updateDurationDisplay();
   });
   setsField.appendChild(setsInput);
 
@@ -111,6 +183,8 @@ function createSequenceRow(item, index) {
   restInput.addEventListener('change', () => {
     item.restSeconds = Math.max(0, parseInt(restInput.value, 10) || 0);
     restInput.value = item.restSeconds;
+    updateRowDuration(durationEl, item);
+    updateDurationDisplay();
   });
   restField.append(restLabel, restInput);
 
@@ -199,17 +273,9 @@ function onRowDrop(e) {
 }
 
 function addToSequence(id) {
-  if (!isRunnable(id)) return;
-  const t = ALL_TECHNIQUES.find(x => x.id === id);
-  if (!t) return;
-  sequence.push({
-    id: t.id,
-    name: t.name,
-    description: t.description,
-    sets: t.defaultSets,
-    sound: t.defaultSound,
-    restSeconds: t.defaultRestSeconds ?? 20,
-  });
+  const item = buildSequenceItem(id);
+  if (!item) return;
+  sequence.push(item);
   renderSequence();
 }
 

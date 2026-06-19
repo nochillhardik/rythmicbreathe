@@ -166,6 +166,24 @@ h1 {
   color: var(--text-muted);
 }
 
+.row-duration {
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: var(--bark);
+  margin-top: 0.35rem;
+}
+
+.session-total-time {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bark-dark);
+  text-align: center;
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(139,111,71,0.15);
+}
+
 .row-sets, .row-sound, .row-rest {
   display: flex;
   flex-direction: column;

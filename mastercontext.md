@@ -55,7 +55,7 @@ css/session.css         Session orb, overlays
 js/main.js              Boot wiring
 js/audio.js             Sounds, voice, 9 tonal profiles
 js/techniques/          Technique engines
-js/session/             Sequencer, duration estimates, UI controller
+js/session/             Sequencer, constants, duration estimates, UI controller
 js/ui/drag-sequence.js  Sequence builder
 legacy/                 Original single-file app
 ```

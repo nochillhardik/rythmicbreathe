@@ -6,8 +6,8 @@ import {
   speakAsync,
 } from '../audio.js';
 import { getTechnique } from '../techniques/registry.js';
+import { TRANSITION_MS } from './constants.js';
 
-const TRANSITION_MS = 30000;
 const TRANSITION_WARNING_MS = 25000;
 
 export class SessionSequencer {
