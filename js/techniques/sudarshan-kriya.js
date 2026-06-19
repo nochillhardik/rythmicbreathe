@@ -8,7 +8,7 @@ const PHASES = [
 
 export const sudarshanKriya = {
   id: 'sudarshan-kriya',
-  name: 'Sudarshan Kriya',
+  name: 'Pulse Meditation',
   description: '20 slow · 40 medium · 40 fast breaths per set',
   defaultSets: 1,
   defaultSound: 'singing-bowl',
@@ -17,6 +17,13 @@ export const sudarshanKriya = {
 
   getSetStructure() {
     return '1 set = 20 slow + 40 medium + 40 fast breaths';
+  },
+
+  getSetDurationMs() {
+    return PHASES.reduce(
+      (sum, phase) => sum + phase.breaths * (phase.inhaleMs + phase.exhaleMs),
+      0,
+    );
   },
 
   async *runSet(ctx) {

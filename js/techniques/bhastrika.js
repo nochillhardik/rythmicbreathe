@@ -6,7 +6,7 @@ const EXHALE_MS = 1000;
 
 export const bhastrika = {
   id: 'bhastrika',
-  name: 'Bhastrika',
+  name: 'Burst Detox',
   description: '2s in · 1s out · 20 breaths per set',
   defaultSets: 3,
   defaultSound: 'singing-bowl',
@@ -15,6 +15,10 @@ export const bhastrika = {
 
   getSetStructure() {
     return '1 set = 20 breaths (2s in, 1s out)';
+  },
+
+  getSetDurationMs() {
+    return BREATHS_PER_SET * (INHALE_MS + EXHALE_MS);
   },
 
   async *runSet(ctx) {

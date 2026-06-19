@@ -6,11 +6,31 @@ Audio-first meditation breathing guide for mobile (GitHub Pages). User practices
 
 | ID | Name | 1 Set | Default sets |
 |----|------|-------|--------------|
-| `sudarshan-kriya` | Sudarshan Kriya | 20 slow + 40 med + 40 fast | 1 |
-| `pranayam` | Pranayam | 8+8+6 breaths (4-4-6-2), configurable rest between sub-cycles | 1 |
-| `bhastrika` | Bhastrika | 20 breaths (2s in, 1s out) | 3 |
+| `sudarshan-kriya` | Pulse Meditation | 20 slow + 40 med + 40 fast | 1 |
+| `pranayam` | Box Breathing | 8+8+6 breaths (4-4-6-2), configurable rest between sub-cycles | 1 |
+| `bhastrika` | Burst Detox | 20 breaths (2s in, 1s out) | 3 |
 
 Placeholders (not runnable): Body Scan, Loving-Kindness, 4-7-8 Breathing.
+
+## Default session
+
+On first load, the sequence is pre-filled:
+
+| Order | Technique | Sets | Sound | Rest |
+|-------|-----------|------|-------|------|
+| 1 | Box Breathing | 1 | Singing Bowl | 20s |
+| 2 | Burst Detox | 3 | Singing Bowl | 20s |
+| 3 | Pulse Meditation | 1 | Singing Bowl | 20s |
+
+Users can reorder, remove, or change any row. Defaults apply only on page load.
+
+## Duration display
+
+Setup page shows estimated time per technique row and a **Total** below the sequence. Estimates include breathing, intra-technique rests, inter-set rests, and fixed 30s transitions between techniques. Sound choice does not affect duration; sets and rest do.
+
+Default arrangement total: **~14 min 52 sec** (Box Breathing 6m32s + Burst Detox 3m40s + Pulse Meditation 3m40s + 2×30s transitions).
+
+Logic lives in `js/session/duration.js`; each technique exposes `getSetDurationMs(restSeconds)`.
 
 ## Rest timing
 
@@ -18,7 +38,7 @@ Each sequence row has **Rest (sec)** (default **20**, min **0**).
 
 | When | Rest? |
 |------|-------|
-| Pranayam: after 8-breath sub-cycle (not after final 6) | Yes, row setting |
+| Box Breathing: after 8-breath sub-cycle (not after final 6) | Yes, row setting |
 | After a set, if another set of same technique follows | Yes, row setting |
 | After last set of a technique | No — goes to next technique or session end |
 | Between techniques | **30s fixed** (`"Next: …"` / `"Starting …"`) — not configurable |
@@ -35,7 +55,7 @@ css/session.css         Session orb, overlays
 js/main.js              Boot wiring
 js/audio.js             Sounds, voice, 9 tonal profiles
 js/techniques/          Technique engines
-js/session/             Sequencer + UI controller
+js/session/             Sequencer, duration estimates, UI controller
 js/ui/drag-sequence.js  Sequence builder
 legacy/                 Original single-file app
 ```
@@ -44,19 +64,21 @@ legacy/                 Original single-file app
 
 Singing Bowl, Tibetan Bowl, Crystal Bowl, Deep Gong, Wind Chime, Hand Pan, Soft Beep, Quartz Tone, Warm Pulse, Voice Male/Female.
 
-Pranayam with tonal sounds: 4 distinct pitches per breath (in → hold → out → hold).
+Box Breathing with tonal sounds: 4 distinct pitches per breath (in → hold → out → hold).
 
 Transitions between techniques: spoken "Next: …" then after 25s "Starting …" (30s total break).
 
 ## How to test
 
 1. **Open locally:** serve the folder (ES modules need HTTP). Example: `npx serve .` then open the URL on phone/PC.
-2. **GitHub Pages:** push repo; open your Pages URL on mobile.
-3. **Pranayam, rest=20:** hear "Rest" twice (after first 8 and second 8 breaths); no rest after 6 breaths.
-4. **Bhastrika, 3 sets, rest=20:** hear "Rest" twice between sets; no rest after set 3.
-5. **SK → Bhastrika:** no rest after SK's last set; hear "Next: Bhastrika" immediately.
-6. **rest=0:** no "Rest" pauses for that technique.
-7. **Stop early:** hold 1s during session → hear "Session stopped".
+2. **Default load:** sequence shows Box Breathing (1), Burst Detox (3), Pulse Meditation (1); total ~14 min 52 sec.
+3. **GitHub Pages:** push repo; open your Pages URL on mobile.
+4. **Box Breathing, rest=20:** hear "Rest" twice (after first 8 and second 8 breaths); no rest after 6 breaths.
+5. **Burst Detox, 3 sets, rest=20:** hear "Rest" twice between sets; no rest after set 3.
+6. **Pulse Meditation → Burst Detox:** no rest after Pulse Meditation's last set; hear "Next: Burst Detox" immediately.
+7. **rest=0:** no "Rest" pauses for that technique.
+8. **Duration UI:** change sets or rest on a row — per-row time and total update immediately.
+9. **Stop early:** hold 1s during session → hear "Session stopped".
 
 ## Session flow
 

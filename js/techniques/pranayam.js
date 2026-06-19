@@ -11,7 +11,7 @@ const CYCLES = [8, 8, 6];
 
 export const pranayam = {
   id: 'pranayam',
-  name: 'Pranayam',
+  name: 'Box Breathing',
   description: '4-4-6-2 pattern · 8 + 8 + 6 breaths per set',
   defaultSets: 1,
   defaultSound: 'singing-bowl',
@@ -20,6 +20,18 @@ export const pranayam = {
 
   getSetStructure() {
     return '1 set = 8 + 8 + 6 breaths (4s in, 4s hold, 6s out, 2s hold)';
+  },
+
+  getSetDurationMs(restSeconds = 20) {
+    const breathMs = BREATH_STEPS.reduce((sum, step) => sum + step.durationMs, 0);
+    let ms = 0;
+    for (let ci = 0; ci < CYCLES.length; ci++) {
+      ms += CYCLES[ci] * breathMs;
+      if (ci < CYCLES.length - 1 && restSeconds > 0) {
+        ms += restSeconds * 1000;
+      }
+    }
+    return ms;
   },
 
   async *runSet(ctx) {
